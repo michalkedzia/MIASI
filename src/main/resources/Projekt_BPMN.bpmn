@@ -148,12 +148,12 @@
       <bpmn:incoming>Flow_1oieulm</bpmn:incoming>
       <bpmn:outgoing>Flow_1fdqcho</bpmn:outgoing>
     </bpmn:userTask>
-    <bpmn:userTask id="Activity_14lcplk" name="Płatność">
+    <bpmn:scriptTask id="Activity_14lcplk" name="Płatność">
       <bpmn:incoming>Flow_1ffur9f</bpmn:incoming>
       <bpmn:incoming>Flow_05qr0kl</bpmn:incoming>
       <bpmn:incoming>Flow_1yikhiu</bpmn:incoming>
       <bpmn:outgoing>Flow_0hinvp6</bpmn:outgoing>
-    </bpmn:userTask>
+    </bpmn:scriptTask>
   </bpmn:process>
   <bpmn:process id="Process_1giwkpp" isExecutable="false" />
   <bpmn:process id="Process_1gcup83" isExecutable="false" />
@@ -250,7 +250,7 @@
       <bpmndi:BPMNShape id="Activity_0fnrx8n_di" bpmnElement="Activity_1qtk1k6">
         <dc:Bounds x="359" y="360" width="100" height="80" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Activity_098w7dk_di" bpmnElement="Activity_14lcplk">
+      <bpmndi:BPMNShape id="Activity_0fvwm0f_di" bpmnElement="Activity_14lcplk">
         <dc:Bounds x="1360" y="445" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Activity_0x3xppl_di" bpmnElement="Activity_0x3xppl" isExpanded="true">
