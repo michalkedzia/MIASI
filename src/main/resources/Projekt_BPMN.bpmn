@@ -157,6 +157,7 @@
         <bpmn:extensionElements>
           <camunda:connector>
             <camunda:inputOutput>
+              <camunda:inputParameter name="text">Faktura na kwote: ${res}</camunda:inputParameter>
               <camunda:inputParameter name="subject">Faktura za naprawę</camunda:inputParameter>
               <camunda:inputParameter name="to">miasi-client@yopmail.com</camunda:inputParameter>
             </camunda:inputOutput>
@@ -192,12 +193,23 @@
       <bpmn:incoming>Flow_1oieulm</bpmn:incoming>
       <bpmn:outgoing>Flow_1fdqcho</bpmn:outgoing>
     </bpmn:userTask>
-    <bpmn:scriptTask id="Activity_14lcplk" name="Płatność">
+    <bpmn:scriptTask id="Activity_14lcplk" name="Płatność" scriptFormat="js" camunda:resultVariable="res">
       <bpmn:incoming>Flow_1ffur9f</bpmn:incoming>
       <bpmn:incoming>Flow_05qr0kl</bpmn:incoming>
       <bpmn:incoming>Flow_1yikhiu</bpmn:incoming>
       <bpmn:outgoing>Flow_0hinvp6</bpmn:outgoing>
-      <bpmn:script>false</bpmn:script>
+      <bpmn:script>res = 0;
+
+if(repair_required){
+    res = res + 200;
+}else{
+    res = res + 100;
+}
+
+if(parts_required){
+    res = res + 1000;
+}
+execution.setVariable('res', res);</bpmn:script>
     </bpmn:scriptTask>
   </bpmn:process>
   <bpmn:process id="Process_1giwkpp" isExecutable="false" />
