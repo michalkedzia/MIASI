@@ -77,7 +77,7 @@ execution.setVariable('res', res);</bpmn:script>
         <bpmn:extensionElements>
           <camunda:connector>
             <camunda:inputOutput>
-              <camunda:inputParameter name="text">Faktura na kwote: ${res}</camunda:inputParameter>
+              <camunda:inputParameter name="text">Faktura na kwote ${res} zł</camunda:inputParameter>
               <camunda:inputParameter name="subject">Faktura za naprawę</camunda:inputParameter>
               <camunda:inputParameter name="to">miasi-client@yopmail.com</camunda:inputParameter>
             </camunda:inputOutput>
@@ -97,7 +97,8 @@ execution.setVariable('res', res);</bpmn:script>
         <bpmn:extensionElements>
           <camunda:connector>
             <camunda:inputOutput>
-              <camunda:inputParameter name="subject">Naprawa niemożliwa z powodu braku części</camunda:inputParameter>
+              <camunda:inputParameter name="text">Naprawa niemożliwa z powodu braku części</camunda:inputParameter>
+              <camunda:inputParameter name="subject">Naprawa niemożliwa</camunda:inputParameter>
               <camunda:inputParameter name="to">miasi-client@yopmail.com</camunda:inputParameter>
             </camunda:inputOutput>
             <camunda:connectorId>mail-send</camunda:connectorId>
@@ -113,6 +114,7 @@ execution.setVariable('res', res);</bpmn:script>
         <bpmn:extensionElements>
           <camunda:connector>
             <camunda:inputOutput>
+              <camunda:inputParameter name="text">Naprawa pojazdu zakończona</camunda:inputParameter>
               <camunda:inputParameter name="subject">Naprawa zakończona</camunda:inputParameter>
               <camunda:inputParameter name="to">miasi-client@yopmail.com</camunda:inputParameter>
             </camunda:inputOutput>
@@ -129,6 +131,7 @@ execution.setVariable('res', res);</bpmn:script>
         <bpmn:extensionElements>
           <camunda:connector>
             <camunda:inputOutput>
+              <camunda:inputParameter name="text">Numer zamówienia: ${order}</camunda:inputParameter>
               <camunda:inputParameter name="subject">Zamówienie ${order}</camunda:inputParameter>
               <camunda:inputParameter name="to">miasi-shop@yopmail.com</camunda:inputParameter>
             </camunda:inputOutput>
@@ -307,26 +310,41 @@ execution.setVariable('res', res);</bpmn:script>
         <di:waypoint x="298" y="400" />
         <di:waypoint x="359" y="400" />
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNShape id="_BPMNShape_StartEvent_2" bpmnElement="StartEvent_1">
-        <dc:Bounds x="262" y="382" width="36" height="36" />
+      <bpmndi:BPMNShape id="Activity_0fvwm0f_di" bpmnElement="Activity_14lcplk">
+        <dc:Bounds x="1360" y="445" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0fnrx8n_di" bpmnElement="Activity_1qtk1k6">
+        <dc:Bounds x="359" y="360" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_04hzds8_di" bpmnElement="Event_0xmle3z">
+        <dc:Bounds x="1512" y="467" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="253" y="425" width="57" height="27" />
+          <dc:Bounds x="1491" y="510" width="80" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Gateway_0oo33e2_di" bpmnElement="Gateway_0oo33e2" isMarkerVisible="true">
-        <dc:Bounds x="515" y="375" width="50" height="50" />
+      <bpmndi:BPMNShape id="Event_04e2lt1_di" bpmnElement="Event_04e2lt1">
+        <dc:Bounds x="1752" y="467" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="503" y="432" width="76" height="27" />
+          <dc:Bounds x="1753" y="510" width="35" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Activity_1ng5kgz_di" bpmnElement="Activity_0q40vyw">
-        <dc:Bounds x="850" y="800" width="100" height="80" />
+      <bpmndi:BPMNShape id="Event_01rualk_di" bpmnElement="Event_100g260">
+        <dc:Bounds x="1292" y="862" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1275" y="903" width="70" height="53" />
+        </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Activity_19x5f73_di" bpmnElement="Activity_0dm0b4y">
-        <dc:Bounds x="1600" y="445" width="100" height="80" />
+      <bpmndi:BPMNShape id="Event_18cqr9n_di" bpmnElement="Event_0lwia64">
+        <dc:Bounds x="1222" y="467" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1211" y="510" width="59" height="27" />
+        </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Activity_1t2jfk3_di" bpmnElement="Activity_00p8cln">
-        <dc:Bounds x="630" y="710" width="100" height="80" />
+      <bpmndi:BPMNShape id="Event_10qt7wq_di" bpmnElement="Event_12qy8vz">
+        <dc:Bounds x="662" y="822" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="589" y="820" width="62" height="40" />
+        </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Activity_0x3xppl_di" bpmnElement="Activity_0x3xppl" isExpanded="true">
         <dc:Bounds x="640" y="290" width="530" height="340" />
@@ -405,41 +423,26 @@ execution.setVariable('res', res);</bpmn:script>
       <bpmndi:BPMNShape id="Activity_14wgdzy_di" bpmnElement="Activity_0kjqdrj">
         <dc:Bounds x="820" y="490" width="100" height="80" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Event_10qt7wq_di" bpmnElement="Event_12qy8vz">
-        <dc:Bounds x="662" y="822" width="36" height="36" />
+      <bpmndi:BPMNShape id="Activity_19x5f73_di" bpmnElement="Activity_0dm0b4y">
+        <dc:Bounds x="1600" y="445" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1ng5kgz_di" bpmnElement="Activity_0q40vyw">
+        <dc:Bounds x="850" y="800" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_0oo33e2_di" bpmnElement="Gateway_0oo33e2" isMarkerVisible="true">
+        <dc:Bounds x="515" y="375" width="50" height="50" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="589" y="820" width="62" height="40" />
+          <dc:Bounds x="503" y="432" width="76" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Event_18cqr9n_di" bpmnElement="Event_0lwia64">
-        <dc:Bounds x="1222" y="467" width="36" height="36" />
+      <bpmndi:BPMNShape id="_BPMNShape_StartEvent_2" bpmnElement="StartEvent_1">
+        <dc:Bounds x="262" y="382" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="1211" y="510" width="59" height="27" />
+          <dc:Bounds x="253" y="425" width="57" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Event_01rualk_di" bpmnElement="Event_100g260">
-        <dc:Bounds x="1292" y="862" width="36" height="36" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="1275" y="903" width="70" height="53" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Event_04e2lt1_di" bpmnElement="Event_04e2lt1">
-        <dc:Bounds x="1752" y="467" width="36" height="36" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="1753" y="510" width="35" height="14" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Event_04hzds8_di" bpmnElement="Event_0xmle3z">
-        <dc:Bounds x="1512" y="467" width="36" height="36" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="1491" y="510" width="80" height="14" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Activity_0fnrx8n_di" bpmnElement="Activity_1qtk1k6">
-        <dc:Bounds x="359" y="360" width="100" height="80" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Activity_0fvwm0f_di" bpmnElement="Activity_14lcplk">
-        <dc:Bounds x="1360" y="445" width="100" height="80" />
+      <bpmndi:BPMNShape id="Activity_1t2jfk3_di" bpmnElement="Activity_00p8cln">
+        <dc:Bounds x="630" y="710" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Event_1ylvi5u_di" bpmnElement="Event_029mowv">
         <dc:Bounds x="662" y="612" width="36" height="36" />
