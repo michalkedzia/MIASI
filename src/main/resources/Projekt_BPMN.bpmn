@@ -166,23 +166,9 @@
         </bpmn:extensionElements>
       </bpmn:messageEventDefinition>
     </bpmn:intermediateThrowEvent>
-    <bpmn:task id="Activity_0dm0b4y" name="Odbiór pojazdu">
-      <bpmn:incoming>Flow_02jhjr2</bpmn:incoming>
-      <bpmn:outgoing>Flow_1sp6iwb</bpmn:outgoing>
-    </bpmn:task>
     <bpmn:sequenceFlow id="Flow_1sp6iwb" sourceRef="Activity_0dm0b4y" targetRef="Event_04e2lt1" />
     <bpmn:sequenceFlow id="Flow_0hinvp6" sourceRef="Activity_14lcplk" targetRef="Event_0xmle3z" />
     <bpmn:sequenceFlow id="Flow_02jhjr2" sourceRef="Event_0xmle3z" targetRef="Activity_0dm0b4y" />
-    <bpmn:task id="Activity_0q40vyw" name="Odbieranie cześci">
-      <bpmn:incoming>Flow_0py5yyn</bpmn:incoming>
-      <bpmn:outgoing>Flow_01y6hw0</bpmn:outgoing>
-    </bpmn:task>
-    <bpmn:boundaryEvent id="Event_0y45yv5" name="48h" attachedToRef="Activity_0q40vyw">
-      <bpmn:outgoing>Flow_0kfapjy</bpmn:outgoing>
-      <bpmn:timerEventDefinition id="TimerEventDefinition_0jx94qr">
-        <bpmn:timeDuration xsi:type="bpmn:tFormalExpression">PT48H</bpmn:timeDuration>
-      </bpmn:timerEventDefinition>
-    </bpmn:boundaryEvent>
     <bpmn:userTask id="Activity_1qtk1k6" name="Sprawdzenie stanu pojazdu">
       <bpmn:extensionElements>
         <camunda:formData>
@@ -211,6 +197,20 @@ if(parts_required){
 }
 execution.setVariable('res', res);</bpmn:script>
     </bpmn:scriptTask>
+    <bpmn:userTask id="Activity_0q40vyw" name="Odbieranie cześci">
+      <bpmn:incoming>Flow_0py5yyn</bpmn:incoming>
+      <bpmn:outgoing>Flow_01y6hw0</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:boundaryEvent id="Event_0y45yv5" name="15S&#10;&#10;" attachedToRef="Activity_0q40vyw">
+      <bpmn:outgoing>Flow_0kfapjy</bpmn:outgoing>
+      <bpmn:timerEventDefinition id="TimerEventDefinition_0jx94qr">
+        <bpmn:timeDuration xsi:type="bpmn:tFormalExpression">PT15S</bpmn:timeDuration>
+      </bpmn:timerEventDefinition>
+    </bpmn:boundaryEvent>
+    <bpmn:userTask id="Activity_0dm0b4y" name="Odbiór pojazdu">
+      <bpmn:incoming>Flow_02jhjr2</bpmn:incoming>
+      <bpmn:outgoing>Flow_1sp6iwb</bpmn:outgoing>
+    </bpmn:userTask>
   </bpmn:process>
   <bpmn:process id="Process_1giwkpp" isExecutable="false" />
   <bpmn:process id="Process_1gcup83" isExecutable="false" />
@@ -303,6 +303,12 @@ execution.setVariable('res', res);</bpmn:script>
         <bpmndi:BPMNLabel>
           <dc:Bounds x="502" y="432" width="77" height="27" />
         </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1ng5kgz_di" bpmnElement="Activity_0q40vyw">
+        <dc:Bounds x="850" y="800" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_19x5f73_di" bpmnElement="Activity_0dm0b4y">
+        <dc:Bounds x="1600" y="445" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Activity_0x3xppl_di" bpmnElement="Activity_0x3xppl" isExpanded="true">
         <dc:Bounds x="640" y="290" width="530" height="340" />
@@ -414,28 +420,22 @@ execution.setVariable('res', res);</bpmn:script>
           <dc:Bounds x="1490" y="510" width="82" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Activity_0dm0b4y_di" bpmnElement="Activity_0dm0b4y">
-        <dc:Bounds x="1600" y="445" width="100" height="80" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Activity_026tkif_di" bpmnElement="Activity_0q40vyw">
-        <dc:Bounds x="850" y="800" width="100" height="80" />
-      </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Activity_0fnrx8n_di" bpmnElement="Activity_1qtk1k6">
         <dc:Bounds x="359" y="360" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Activity_0fvwm0f_di" bpmnElement="Activity_14lcplk">
         <dc:Bounds x="1360" y="445" width="100" height="80" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Event_01cgex9_di" bpmnElement="Event_0y45yv5">
-        <dc:Bounds x="932" y="862" width="36" height="36" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="941" y="908" width="19" height="14" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Event_1ylvi5u_di" bpmnElement="Event_029mowv">
         <dc:Bounds x="662" y="612" width="36" height="36" />
         <bpmndi:BPMNLabel>
           <dc:Bounds x="665" y="593" width="70" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_01cgex9_di" bpmnElement="Event_0y45yv5">
+        <dc:Bounds x="932" y="862" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="941" y="908" width="20" height="40" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Participant_1oxdfjv_di" bpmnElement="Participant_1oxdfjv" isHorizontal="true">
