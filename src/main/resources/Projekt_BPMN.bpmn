@@ -12,14 +12,131 @@
     <bpmn:messageFlow id="Flow_1p2n6mt" name="Przekazanie zamówionych części zamiennych" sourceRef="Participant_0g2jrbc" targetRef="Activity_0q40vyw" />
   </bpmn:collaboration>
   <bpmn:process id="Process_11hz3ne" isExecutable="true">
-    <bpmn:startEvent id="StartEvent_1" name="Otrzymanie pojazdu">
-      <bpmn:outgoing>Flow_1oieulm</bpmn:outgoing>
-    </bpmn:startEvent>
-    <bpmn:exclusiveGateway id="Gateway_0oo33e2" name="Czy wymagana jest naprawa?">
-      <bpmn:incoming>Flow_1fdqcho</bpmn:incoming>
-      <bpmn:outgoing>Flow_1ffur9f</bpmn:outgoing>
-      <bpmn:outgoing>Flow_1p25yvu</bpmn:outgoing>
-    </bpmn:exclusiveGateway>
+    <bpmn:sequenceFlow id="Flow_1oieulm" sourceRef="StartEvent_1" targetRef="Activity_1qtk1k6" />
+    <bpmn:sequenceFlow id="Flow_1fdqcho" sourceRef="Activity_1qtk1k6" targetRef="Gateway_0oo33e2" />
+    <bpmn:sequenceFlow id="Flow_1p25yvu" name="Tak" sourceRef="Gateway_0oo33e2" targetRef="Activity_0x3xppl">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">#{repair_required == 'true'}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_1ffur9f" name="Nie" sourceRef="Gateway_0oo33e2" targetRef="Activity_14lcplk">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">#{repair_required == 'false'}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_01w5f67" sourceRef="Activity_0x3xppl" targetRef="Event_0lwia64" />
+    <bpmn:sequenceFlow id="Flow_1j0acng" sourceRef="Event_029mowv" targetRef="Activity_00p8cln" />
+    <bpmn:sequenceFlow id="Flow_01y6hw0" sourceRef="Activity_0q40vyw" targetRef="Activity_0x3xppl" />
+    <bpmn:sequenceFlow id="Flow_15pmfju" sourceRef="Activity_00p8cln" targetRef="Event_12qy8vz" />
+    <bpmn:sequenceFlow id="Flow_0py5yyn" sourceRef="Event_12qy8vz" targetRef="Activity_0q40vyw" />
+    <bpmn:sequenceFlow id="Flow_0kfapjy" sourceRef="Event_0y45yv5" targetRef="Event_100g260" />
+    <bpmn:sequenceFlow id="Flow_05qr0kl" sourceRef="Event_100g260" targetRef="Activity_14lcplk" />
+    <bpmn:sequenceFlow id="Flow_1yikhiu" sourceRef="Event_0lwia64" targetRef="Activity_14lcplk" />
+    <bpmn:sequenceFlow id="Flow_1sp6iwb" sourceRef="Activity_0dm0b4y" targetRef="Event_04e2lt1" />
+    <bpmn:sequenceFlow id="Flow_0hinvp6" sourceRef="Activity_14lcplk" targetRef="Event_0xmle3z" />
+    <bpmn:sequenceFlow id="Flow_02jhjr2" sourceRef="Event_0xmle3z" targetRef="Activity_0dm0b4y" />
+    <bpmn:boundaryEvent id="Event_0y45yv5" name="15S&#10;&#10;" attachedToRef="Activity_0q40vyw">
+      <bpmn:outgoing>Flow_0kfapjy</bpmn:outgoing>
+      <bpmn:timerEventDefinition id="TimerEventDefinition_0jx94qr">
+        <bpmn:timeDuration xsi:type="bpmn:tFormalExpression">PT15S</bpmn:timeDuration>
+      </bpmn:timerEventDefinition>
+    </bpmn:boundaryEvent>
+    <bpmn:boundaryEvent id="Event_029mowv" name="Zamów częsci" attachedToRef="Activity_0x3xppl">
+      <bpmn:outgoing>Flow_1j0acng</bpmn:outgoing>
+      <bpmn:errorEventDefinition id="ErrorEventDefinition_14mmay9" errorRef="Error_1d65yi2" />
+    </bpmn:boundaryEvent>
+    <bpmn:scriptTask id="Activity_14lcplk" name="Płatność" scriptFormat="js" camunda:resultVariable="res">
+      <bpmn:incoming>Flow_1ffur9f</bpmn:incoming>
+      <bpmn:incoming>Flow_05qr0kl</bpmn:incoming>
+      <bpmn:incoming>Flow_1yikhiu</bpmn:incoming>
+      <bpmn:outgoing>Flow_0hinvp6</bpmn:outgoing>
+      <bpmn:script>res = 0;
+
+if(repair_required){
+    res = res + 200;
+}else{
+    res = res + 100;
+}
+
+if(parts_required){
+    res = res + 1000;
+}
+execution.setVariable('res', res);</bpmn:script>
+    </bpmn:scriptTask>
+    <bpmn:userTask id="Activity_1qtk1k6" name="Sprawdzenie stanu pojazdu">
+      <bpmn:extensionElements>
+        <camunda:formData>
+          <camunda:formField id="repair_required" label="Czy wymagana jest naprawa?" type="boolean" defaultValue="false" />
+          <camunda:formField id="parts_required" label="Czy do naprawy wymagane są części?" type="boolean" defaultValue="false" />
+        </camunda:formData>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_1oieulm</bpmn:incoming>
+      <bpmn:outgoing>Flow_1fdqcho</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:intermediateThrowEvent id="Event_0xmle3z" name="Wysłanie faktury">
+      <bpmn:extensionElements />
+      <bpmn:incoming>Flow_0hinvp6</bpmn:incoming>
+      <bpmn:outgoing>Flow_02jhjr2</bpmn:outgoing>
+      <bpmn:messageEventDefinition id="MessageEventDefinition_0kjkp30">
+        <bpmn:extensionElements>
+          <camunda:connector>
+            <camunda:inputOutput>
+              <camunda:inputParameter name="text">Faktura na kwote: ${res}</camunda:inputParameter>
+              <camunda:inputParameter name="subject">Faktura za naprawę</camunda:inputParameter>
+              <camunda:inputParameter name="to">miasi-client@yopmail.com</camunda:inputParameter>
+            </camunda:inputOutput>
+            <camunda:connectorId>mail-send</camunda:connectorId>
+          </camunda:connector>
+        </bpmn:extensionElements>
+      </bpmn:messageEventDefinition>
+    </bpmn:intermediateThrowEvent>
+    <bpmn:endEvent id="Event_04e2lt1" name="Koniec">
+      <bpmn:incoming>Flow_1sp6iwb</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:intermediateThrowEvent id="Event_100g260" name="Niemożliwa naprawa z powodu braku częsci">
+      <bpmn:extensionElements />
+      <bpmn:incoming>Flow_0kfapjy</bpmn:incoming>
+      <bpmn:outgoing>Flow_05qr0kl</bpmn:outgoing>
+      <bpmn:messageEventDefinition id="MessageEventDefinition_0v27kev">
+        <bpmn:extensionElements>
+          <camunda:connector>
+            <camunda:inputOutput>
+              <camunda:inputParameter name="subject">Naprawa niemożliwa z powodu braku części</camunda:inputParameter>
+              <camunda:inputParameter name="to">miasi-client@yopmail.com</camunda:inputParameter>
+            </camunda:inputOutput>
+            <camunda:connectorId>mail-send</camunda:connectorId>
+          </camunda:connector>
+        </bpmn:extensionElements>
+      </bpmn:messageEventDefinition>
+    </bpmn:intermediateThrowEvent>
+    <bpmn:intermediateThrowEvent id="Event_0lwia64" name="Naprawa zakończona">
+      <bpmn:extensionElements />
+      <bpmn:incoming>Flow_01w5f67</bpmn:incoming>
+      <bpmn:outgoing>Flow_1yikhiu</bpmn:outgoing>
+      <bpmn:messageEventDefinition id="MessageEventDefinition_05oaj61">
+        <bpmn:extensionElements>
+          <camunda:connector>
+            <camunda:inputOutput>
+              <camunda:inputParameter name="subject">Naprawa zakończona</camunda:inputParameter>
+              <camunda:inputParameter name="to">miasi-client@yopmail.com</camunda:inputParameter>
+            </camunda:inputOutput>
+            <camunda:connectorId>mail-send</camunda:connectorId>
+          </camunda:connector>
+        </bpmn:extensionElements>
+      </bpmn:messageEventDefinition>
+    </bpmn:intermediateThrowEvent>
+    <bpmn:intermediateThrowEvent id="Event_12qy8vz" name="Złożenie zamównia w sklepie">
+      <bpmn:extensionElements />
+      <bpmn:incoming>Flow_15pmfju</bpmn:incoming>
+      <bpmn:outgoing>Flow_0py5yyn</bpmn:outgoing>
+      <bpmn:messageEventDefinition id="MessageEventDefinition_1ngu5w7">
+        <bpmn:extensionElements>
+          <camunda:connector>
+            <camunda:inputOutput>
+              <camunda:inputParameter name="subject">Zamówienie ${order}</camunda:inputParameter>
+              <camunda:inputParameter name="to">miasi-shop@yopmail.com</camunda:inputParameter>
+            </camunda:inputOutput>
+            <camunda:connectorId>mail-send</camunda:connectorId>
+          </camunda:connector>
+        </bpmn:extensionElements>
+      </bpmn:messageEventDefinition>
+    </bpmn:intermediateThrowEvent>
     <bpmn:subProcess id="Activity_0x3xppl" name="Naprawa pojazdu">
       <bpmn:incoming>Flow_1p25yvu</bpmn:incoming>
       <bpmn:incoming>Flow_01y6hw0</bpmn:incoming>
@@ -67,149 +184,47 @@
       <bpmn:userTask id="Activity_0kjqdrj" name="Sprawadznie dostępności części w magazynie">
         <bpmn:extensionElements>
           <camunda:formData>
-            <camunda:formField id="all_parts_in_storage" label="all_parts_in_storage" type="boolean" defaultValue="false" />
+            <camunda:formField id="all_parts_in_storage" label="Czy części dostępne są w magazynie?" type="boolean" defaultValue="false" />
           </camunda:formData>
         </bpmn:extensionElements>
         <bpmn:incoming>Flow_1j6vjgu</bpmn:incoming>
         <bpmn:outgoing>Flow_187vlea</bpmn:outgoing>
       </bpmn:userTask>
     </bpmn:subProcess>
-    <bpmn:sequenceFlow id="Flow_1oieulm" sourceRef="StartEvent_1" targetRef="Activity_1qtk1k6" />
-    <bpmn:sequenceFlow id="Flow_1fdqcho" sourceRef="Activity_1qtk1k6" targetRef="Gateway_0oo33e2" />
-    <bpmn:sequenceFlow id="Flow_1p25yvu" name="Tak" sourceRef="Gateway_0oo33e2" targetRef="Activity_0x3xppl">
-      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">#{repair_required == 'true'}</bpmn:conditionExpression>
-    </bpmn:sequenceFlow>
-    <bpmn:sequenceFlow id="Flow_1ffur9f" name="Nie" sourceRef="Gateway_0oo33e2" targetRef="Activity_14lcplk">
-      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">#{repair_required == 'false'}</bpmn:conditionExpression>
-    </bpmn:sequenceFlow>
-    <bpmn:sequenceFlow id="Flow_01w5f67" sourceRef="Activity_0x3xppl" targetRef="Event_0lwia64" />
-    <bpmn:sequenceFlow id="Flow_1j0acng" sourceRef="Event_029mowv" targetRef="Activity_00p8cln" />
-    <bpmn:sequenceFlow id="Flow_01y6hw0" sourceRef="Activity_0q40vyw" targetRef="Activity_0x3xppl" />
-    <bpmn:userTask id="Activity_00p8cln" name="Sporządzenie zamównia">
-      <bpmn:incoming>Flow_1j0acng</bpmn:incoming>
-      <bpmn:outgoing>Flow_15pmfju</bpmn:outgoing>
-    </bpmn:userTask>
-    <bpmn:intermediateThrowEvent id="Event_12qy8vz" name="Złożenie zamównia w sklepie">
-      <bpmn:extensionElements />
-      <bpmn:incoming>Flow_15pmfju</bpmn:incoming>
-      <bpmn:outgoing>Flow_0py5yyn</bpmn:outgoing>
-      <bpmn:messageEventDefinition id="MessageEventDefinition_1ngu5w7">
-        <bpmn:extensionElements>
-          <camunda:connector>
-            <camunda:inputOutput>
-              <camunda:inputParameter name="subject">Zamówienie</camunda:inputParameter>
-              <camunda:inputParameter name="to">miasi-shop@yopmail.com</camunda:inputParameter>
-            </camunda:inputOutput>
-            <camunda:connectorId>mail-send</camunda:connectorId>
-          </camunda:connector>
-        </bpmn:extensionElements>
-      </bpmn:messageEventDefinition>
-    </bpmn:intermediateThrowEvent>
-    <bpmn:sequenceFlow id="Flow_15pmfju" sourceRef="Activity_00p8cln" targetRef="Event_12qy8vz" />
-    <bpmn:sequenceFlow id="Flow_0py5yyn" sourceRef="Event_12qy8vz" targetRef="Activity_0q40vyw" />
-    <bpmn:sequenceFlow id="Flow_0kfapjy" sourceRef="Event_0y45yv5" targetRef="Event_100g260" />
-    <bpmn:sequenceFlow id="Flow_05qr0kl" sourceRef="Event_100g260" targetRef="Activity_14lcplk" />
-    <bpmn:boundaryEvent id="Event_029mowv" name="Zamów częsci" attachedToRef="Activity_0x3xppl">
-      <bpmn:outgoing>Flow_1j0acng</bpmn:outgoing>
-      <bpmn:errorEventDefinition id="ErrorEventDefinition_14mmay9" errorRef="Error_1d65yi2" />
-    </bpmn:boundaryEvent>
-    <bpmn:intermediateThrowEvent id="Event_0lwia64" name="Naprawa zakończona">
-      <bpmn:extensionElements />
-      <bpmn:incoming>Flow_01w5f67</bpmn:incoming>
-      <bpmn:outgoing>Flow_1yikhiu</bpmn:outgoing>
-      <bpmn:messageEventDefinition id="MessageEventDefinition_05oaj61">
-        <bpmn:extensionElements>
-          <camunda:connector>
-            <camunda:inputOutput>
-              <camunda:inputParameter name="subject">Naprawa zakończona</camunda:inputParameter>
-              <camunda:inputParameter name="to">miasi-client@yopmail.com</camunda:inputParameter>
-            </camunda:inputOutput>
-            <camunda:connectorId>mail-send</camunda:connectorId>
-          </camunda:connector>
-        </bpmn:extensionElements>
-      </bpmn:messageEventDefinition>
-    </bpmn:intermediateThrowEvent>
-    <bpmn:sequenceFlow id="Flow_1yikhiu" sourceRef="Event_0lwia64" targetRef="Activity_14lcplk" />
-    <bpmn:intermediateThrowEvent id="Event_100g260" name="Niemożliwa naprawa z powodu braku częsci">
-      <bpmn:extensionElements />
-      <bpmn:incoming>Flow_0kfapjy</bpmn:incoming>
-      <bpmn:outgoing>Flow_05qr0kl</bpmn:outgoing>
-      <bpmn:messageEventDefinition id="MessageEventDefinition_0v27kev">
-        <bpmn:extensionElements>
-          <camunda:connector>
-            <camunda:inputOutput>
-              <camunda:inputParameter name="subject">Naprawa niemożliwa z powodu braku części</camunda:inputParameter>
-              <camunda:inputParameter name="to">miasi-client@yopmail.com</camunda:inputParameter>
-            </camunda:inputOutput>
-            <camunda:connectorId>mail-send</camunda:connectorId>
-          </camunda:connector>
-        </bpmn:extensionElements>
-      </bpmn:messageEventDefinition>
-    </bpmn:intermediateThrowEvent>
-    <bpmn:endEvent id="Event_04e2lt1" name="Koniec">
-      <bpmn:incoming>Flow_1sp6iwb</bpmn:incoming>
-    </bpmn:endEvent>
-    <bpmn:intermediateThrowEvent id="Event_0xmle3z" name="Wysłanie faktury">
-      <bpmn:extensionElements />
-      <bpmn:incoming>Flow_0hinvp6</bpmn:incoming>
-      <bpmn:outgoing>Flow_02jhjr2</bpmn:outgoing>
-      <bpmn:messageEventDefinition id="MessageEventDefinition_0kjkp30">
-        <bpmn:extensionElements>
-          <camunda:connector>
-            <camunda:inputOutput>
-              <camunda:inputParameter name="text">Faktura na kwote: ${res}</camunda:inputParameter>
-              <camunda:inputParameter name="subject">Faktura za naprawę</camunda:inputParameter>
-              <camunda:inputParameter name="to">miasi-client@yopmail.com</camunda:inputParameter>
-            </camunda:inputOutput>
-            <camunda:connectorId>mail-send</camunda:connectorId>
-          </camunda:connector>
-        </bpmn:extensionElements>
-      </bpmn:messageEventDefinition>
-    </bpmn:intermediateThrowEvent>
-    <bpmn:sequenceFlow id="Flow_1sp6iwb" sourceRef="Activity_0dm0b4y" targetRef="Event_04e2lt1" />
-    <bpmn:sequenceFlow id="Flow_0hinvp6" sourceRef="Activity_14lcplk" targetRef="Event_0xmle3z" />
-    <bpmn:sequenceFlow id="Flow_02jhjr2" sourceRef="Event_0xmle3z" targetRef="Activity_0dm0b4y" />
-    <bpmn:userTask id="Activity_1qtk1k6" name="Sprawdzenie stanu pojazdu">
+    <bpmn:userTask id="Activity_0dm0b4y" name="Odbiór pojazdu">
       <bpmn:extensionElements>
         <camunda:formData>
-          <camunda:formField id="repair_required" label="repair_required" type="boolean" defaultValue="false" />
-          <camunda:formField id="parts_required" label="parts_required" type="boolean" defaultValue="false" />
+          <camunda:formField id="car" label="Czy odebrano samochód?" type="boolean" defaultValue="false" />
         </camunda:formData>
       </bpmn:extensionElements>
-      <bpmn:incoming>Flow_1oieulm</bpmn:incoming>
-      <bpmn:outgoing>Flow_1fdqcho</bpmn:outgoing>
+      <bpmn:incoming>Flow_02jhjr2</bpmn:incoming>
+      <bpmn:outgoing>Flow_1sp6iwb</bpmn:outgoing>
     </bpmn:userTask>
-    <bpmn:scriptTask id="Activity_14lcplk" name="Płatność" scriptFormat="js" camunda:resultVariable="res">
-      <bpmn:incoming>Flow_1ffur9f</bpmn:incoming>
-      <bpmn:incoming>Flow_05qr0kl</bpmn:incoming>
-      <bpmn:incoming>Flow_1yikhiu</bpmn:incoming>
-      <bpmn:outgoing>Flow_0hinvp6</bpmn:outgoing>
-      <bpmn:script>res = 0;
-
-if(repair_required){
-    res = res + 200;
-}else{
-    res = res + 100;
-}
-
-if(parts_required){
-    res = res + 1000;
-}
-execution.setVariable('res', res);</bpmn:script>
-    </bpmn:scriptTask>
     <bpmn:userTask id="Activity_0q40vyw" name="Odbieranie cześci">
+      <bpmn:extensionElements>
+        <camunda:formData>
+          <camunda:formField id="getOder" label="Czy odebrano części?" type="boolean" defaultValue="false" />
+        </camunda:formData>
+      </bpmn:extensionElements>
       <bpmn:incoming>Flow_0py5yyn</bpmn:incoming>
       <bpmn:outgoing>Flow_01y6hw0</bpmn:outgoing>
     </bpmn:userTask>
-    <bpmn:boundaryEvent id="Event_0y45yv5" name="15S&#10;&#10;" attachedToRef="Activity_0q40vyw">
-      <bpmn:outgoing>Flow_0kfapjy</bpmn:outgoing>
-      <bpmn:timerEventDefinition id="TimerEventDefinition_0jx94qr">
-        <bpmn:timeDuration xsi:type="bpmn:tFormalExpression">PT15S</bpmn:timeDuration>
-      </bpmn:timerEventDefinition>
-    </bpmn:boundaryEvent>
-    <bpmn:userTask id="Activity_0dm0b4y" name="Odbiór pojazdu">
-      <bpmn:incoming>Flow_02jhjr2</bpmn:incoming>
-      <bpmn:outgoing>Flow_1sp6iwb</bpmn:outgoing>
+    <bpmn:exclusiveGateway id="Gateway_0oo33e2" name="Czy wymagana jest naprawa?">
+      <bpmn:incoming>Flow_1fdqcho</bpmn:incoming>
+      <bpmn:outgoing>Flow_1ffur9f</bpmn:outgoing>
+      <bpmn:outgoing>Flow_1p25yvu</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:startEvent id="StartEvent_1" name="Otrzymanie pojazdu">
+      <bpmn:outgoing>Flow_1oieulm</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:userTask id="Activity_00p8cln" name="Sporządzenie zamównia">
+      <bpmn:extensionElements>
+        <camunda:formData>
+          <camunda:formField id="order" label="Zamówienie" type="string" />
+        </camunda:formData>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_1j0acng</bpmn:incoming>
+      <bpmn:outgoing>Flow_15pmfju</bpmn:outgoing>
     </bpmn:userTask>
   </bpmn:process>
   <bpmn:process id="Process_1giwkpp" isExecutable="false" />
@@ -253,7 +268,7 @@ execution.setVariable('res', res);</bpmn:script>
         <di:waypoint x="850" y="840" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_15pmfju_di" bpmnElement="Flow_15pmfju">
-        <di:waypoint x="680" y="770" />
+        <di:waypoint x="680" y="790" />
         <di:waypoint x="680" y="822" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_01y6hw0_di" bpmnElement="Flow_01y6hw0">
@@ -262,7 +277,7 @@ execution.setVariable('res', res);</bpmn:script>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_1j0acng_di" bpmnElement="Flow_1j0acng">
         <di:waypoint x="680" y="648" />
-        <di:waypoint x="680" y="690" />
+        <di:waypoint x="680" y="710" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_01w5f67_di" bpmnElement="Flow_01w5f67">
         <di:waypoint x="1170" y="485" />
@@ -281,7 +296,7 @@ execution.setVariable('res', res);</bpmn:script>
         <di:waypoint x="565" y="400" />
         <di:waypoint x="640" y="400" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="581" y="382" width="18" height="14" />
+          <dc:Bounds x="581" y="382" width="19" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_1fdqcho_di" bpmnElement="Flow_1fdqcho">
@@ -301,7 +316,7 @@ execution.setVariable('res', res);</bpmn:script>
       <bpmndi:BPMNShape id="Gateway_0oo33e2_di" bpmnElement="Gateway_0oo33e2" isMarkerVisible="true">
         <dc:Bounds x="515" y="375" width="50" height="50" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="502" y="432" width="77" height="27" />
+          <dc:Bounds x="503" y="432" width="76" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Activity_1ng5kgz_di" bpmnElement="Activity_0q40vyw">
@@ -309,6 +324,9 @@ execution.setVariable('res', res);</bpmn:script>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Activity_19x5f73_di" bpmnElement="Activity_0dm0b4y">
         <dc:Bounds x="1600" y="445" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1t2jfk3_di" bpmnElement="Activity_00p8cln">
+        <dc:Bounds x="630" y="710" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Activity_0x3xppl_di" bpmnElement="Activity_0x3xppl" isExpanded="true">
         <dc:Bounds x="640" y="290" width="530" height="340" />
@@ -324,7 +342,7 @@ execution.setVariable('res', res);</bpmn:script>
         <di:waypoint x="980" y="505" />
         <di:waypoint x="980" y="440" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="991" y="484" width="18" height="14" />
+          <dc:Bounds x="991" y="484" width="19" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_0duxbuy_di" bpmnElement="Flow_0duxbuy">
@@ -343,7 +361,7 @@ execution.setVariable('res', res);</bpmn:script>
         <di:waypoint x="764" y="530" />
         <di:waypoint x="820" y="530" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="771" y="435" width="18" height="14" />
+          <dc:Bounds x="771" y="435" width="19" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_187vlea_di" bpmnElement="Flow_187vlea">
@@ -387,19 +405,16 @@ execution.setVariable('res', res);</bpmn:script>
       <bpmndi:BPMNShape id="Activity_14wgdzy_di" bpmnElement="Activity_0kjqdrj">
         <dc:Bounds x="820" y="490" width="100" height="80" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Activity_1t2jfk3_di" bpmnElement="Activity_00p8cln">
-        <dc:Bounds x="630" y="690" width="100" height="80" />
-      </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Event_10qt7wq_di" bpmnElement="Event_12qy8vz">
         <dc:Bounds x="662" y="822" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="589" y="820" width="61" height="40" />
+          <dc:Bounds x="589" y="820" width="62" height="40" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Event_18cqr9n_di" bpmnElement="Event_0lwia64">
         <dc:Bounds x="1222" y="467" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="1210" y="510" width="60" height="27" />
+          <dc:Bounds x="1211" y="510" width="59" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Event_01rualk_di" bpmnElement="Event_100g260">
@@ -417,7 +432,7 @@ execution.setVariable('res', res);</bpmn:script>
       <bpmndi:BPMNShape id="Event_04hzds8_di" bpmnElement="Event_0xmle3z">
         <dc:Bounds x="1512" y="467" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="1490" y="510" width="82" height="14" />
+          <dc:Bounds x="1491" y="510" width="80" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Activity_0fnrx8n_di" bpmnElement="Activity_1qtk1k6">
