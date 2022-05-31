@@ -59,7 +59,7 @@ if(parts_required){
 }
 execution.setVariable('res', res);</bpmn:script>
     </bpmn:scriptTask>
-    <bpmn:userTask id="Activity_1qtk1k6" name="Sprawdzenie stanu pojazdu">
+    <bpmn:userTask id="Activity_1qtk1k6" name="Sprawdzenie stanu pojazdu" camunda:assignee="Mechanik">
       <bpmn:extensionElements>
         <camunda:formData>
           <camunda:formField id="repair_required" label="Czy wymagana jest naprawa?" type="boolean" defaultValue="false" />
@@ -184,7 +184,7 @@ execution.setVariable('res', res);</bpmn:script>
       <bpmn:endEvent id="Event_091mhe0" name="Koniec">
         <bpmn:incoming>Flow_0duxbuy</bpmn:incoming>
       </bpmn:endEvent>
-      <bpmn:userTask id="Activity_0kjqdrj" name="Sprawadznie dostępności części w magazynie">
+      <bpmn:userTask id="Activity_0kjqdrj" name="Sprawadznie dostępności części w magazynie" camunda:assignee="Magazynier">
         <bpmn:extensionElements>
           <camunda:formData>
             <camunda:formField id="all_parts_in_storage" label="Czy części dostępne są w magazynie?" type="boolean" defaultValue="false" />
@@ -194,7 +194,7 @@ execution.setVariable('res', res);</bpmn:script>
         <bpmn:outgoing>Flow_187vlea</bpmn:outgoing>
       </bpmn:userTask>
     </bpmn:subProcess>
-    <bpmn:userTask id="Activity_0dm0b4y" name="Odbiór pojazdu">
+    <bpmn:userTask id="Activity_0dm0b4y" name="Odbiór pojazdu" camunda:assignee="Klient">
       <bpmn:extensionElements>
         <camunda:formData>
           <camunda:formField id="car" label="Czy odebrano samochód?" type="boolean" defaultValue="false" />
@@ -203,7 +203,7 @@ execution.setVariable('res', res);</bpmn:script>
       <bpmn:incoming>Flow_02jhjr2</bpmn:incoming>
       <bpmn:outgoing>Flow_1sp6iwb</bpmn:outgoing>
     </bpmn:userTask>
-    <bpmn:userTask id="Activity_0q40vyw" name="Odbieranie cześci">
+    <bpmn:userTask id="Activity_0q40vyw" name="Odbieranie cześci" camunda:assignee="Magazynier">
       <bpmn:extensionElements>
         <camunda:formData>
           <camunda:formField id="getOder" label="Czy odebrano części?" type="boolean" defaultValue="false" />
@@ -220,7 +220,7 @@ execution.setVariable('res', res);</bpmn:script>
     <bpmn:startEvent id="StartEvent_1" name="Otrzymanie pojazdu">
       <bpmn:outgoing>Flow_1oieulm</bpmn:outgoing>
     </bpmn:startEvent>
-    <bpmn:userTask id="Activity_00p8cln" name="Sporządzenie zamównia">
+    <bpmn:userTask id="Activity_00p8cln" name="Sporządzenie zamównia" camunda:assignee="Magazynier">
       <bpmn:extensionElements>
         <camunda:formData>
           <camunda:formField id="order" label="Zamówienie" type="string" />
